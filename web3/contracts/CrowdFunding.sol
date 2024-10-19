@@ -46,6 +46,10 @@ contract CrowdFunding {
 
     modifier campaignActive(uint256 _id) {
         require(!campaigns[_id].isClosed, "Campaign is closed");
+        require(
+            block.timestamp <= campaigns[_id].deadline,
+            "Campaign has ended"
+        );
         _;
     }
 
@@ -58,8 +62,9 @@ contract CrowdFunding {
     ) public returns (uint256) {
         require(
             _deadline > block.timestamp,
-            "The deadline should be a date in the future."
+            "The deadline must be in the future."
         );
+        require(_target > 0, "Target must be greater than 0");
 
         Campaign storage campaign = campaigns[numberOfCampaigns];
         campaign.owner = msg.sender;
@@ -82,39 +87,32 @@ contract CrowdFunding {
     ) public payable campaignExists(_id) campaignActive(_id) {
         require(msg.value > 0, "Donation amount must be greater than 0");
         Campaign storage campaign = campaigns[_id];
-        require(block.timestamp <= campaign.deadline, "Campaign has ended");
+        require(
+            campaign.amountCollected < campaign.target,
+            "Target already reached"
+        );
+        uint256 remainingAmount = campaign.target - campaign.amountCollected;
+        uint256 donationAmount = msg.value;
+        if (msg.value > remainingAmount) {
+            donationAmount = remainingAmount;
+            payable(msg.sender).transfer(msg.value - remainingAmount);
+        }
 
         campaign.donators.push(msg.sender);
-        campaign.donations.push(msg.value);
-        campaign.amountCollected += msg.value;
-
-        emit DonationReceived(_id, msg.sender, msg.value);
-
-        if (campaign.amountCollected >= campaign.target) {
-            closeCampaign(_id);
-        }
+        campaign.donations.push(donationAmount);
+        campaign.amountCollected += donationAmount;
+        emit DonationReceived(_id, msg.sender, donationAmount);
     }
 
     function closeCampaign(
         uint256 _id
-    ) public campaignExists(_id) campaignActive(_id) {
+    ) public campaignExists(_id) campaignActive(_id) onlyCampaignOwner(_id) {
         Campaign storage campaign = campaigns[_id];
-        require(
-            msg.sender == campaign.owner || block.timestamp > campaign.deadline,
-            "Only owner can close before deadline"
-        );
-
         campaign.isClosed = true;
         bool success = campaign.amountCollected >= campaign.target;
-
         if (success) {
             payable(campaign.owner).transfer(campaign.amountCollected);
-        } else {
-            for (uint i = 0; i < campaign.donators.length; i++) {
-                payable(campaign.donators[i]).transfer(campaign.donations[i]);
-            }
         }
-
         emit CampaignClosed(_id, success);
     }
 

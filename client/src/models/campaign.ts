@@ -18,7 +18,7 @@ export class Campaign {
         amountCollected: number,
         image: string,
         donators: string[],
-        donations: number[]
+        donations: number[],
     ) {
         this.owner = owner;
         this.title = title;

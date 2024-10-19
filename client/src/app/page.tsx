@@ -128,7 +128,7 @@ const CreateCampaignDialog = ({
 }: CreateCampaignDialogProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [campaignData, setCampaignData] = useState<Campaign>(
-        new Campaign("", "", "", 0, new Date(), 0, "", [], [])
+        new Campaign("", "", "", 0, new Date(), 0, "", [], []),
     );
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -141,7 +141,7 @@ const CreateCampaignDialog = ({
             <DialogTrigger asChild>
                 <Button disabled={isCreating}>Create Campaign</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[900px]">
                 <DialogHeader>
                     <DialogTitle>Create New Campaign</DialogTitle>
                     <DialogDescription>
@@ -149,124 +149,144 @@ const CreateCampaignDialog = ({
                         campaign.
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit}>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="title" className="text-right">
-                                Title
-                            </Label>
-                            <Input
-                                id="title"
-                                name="title"
-                                className="col-span-3"
-                                required
-                                value={campaignData.title}
-                                onChange={(e) =>
-                                    setCampaignData({
-                                        ...campaignData,
-                                        title: e.target.value,
-                                    })
-                                }
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="description" className="text-right">
-                                Description
-                            </Label>
-                            <Input
-                                id="description"
-                                name="description"
-                                className="col-span-3"
-                                required
-                                value={campaignData.description}
-                                onChange={(e) => {
-                                    setCampaignData({
-                                        ...campaignData,
-                                        description: e.target.value,
-                                    });
-                                }}
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="target" className="text-right">
-                                Target (ETH)
-                            </Label>
-                            <div className="col-span-3 flex items-center">
-                                <Slider
-                                    id="target"
-                                    name="target"
-                                    min={0}
-                                    max={100}
-                                    step={1}
-                                    className="flex-grow mr-2"
-                                    value={[campaignData.target]}
-                                    onValueChange={(value) => {
+                <div className="flex gap-8">
+                    <form onSubmit={handleSubmit} className="flex-1">
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="title" className="text-right">
+                                    Title
+                                </Label>
+                                <Input
+                                    id="title"
+                                    name="title"
+                                    className="col-span-3"
+                                    required
+                                    value={campaignData.title}
+                                    onChange={(e) =>
                                         setCampaignData({
                                             ...campaignData,
-                                            target: value[0],
-                                        });
-                                    }}
+                                            title: e.target.value,
+                                        })
+                                    }
                                 />
-                                <Badge variant="secondary">
-                                    {campaignData.target} ETH
-                                </Badge>
                             </div>
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="deadline" className="text-right">
-                                Deadline
-                            </Label>
-                            <div className="col-span-3">
-                                <Calendar
-                                    mode="single"
-                                    selected={campaignData.deadline}
-                                    onSelect={(date) => {
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label
+                                    htmlFor="description"
+                                    className="text-right"
+                                >
+                                    Description
+                                </Label>
+                                <Input
+                                    id="description"
+                                    name="description"
+                                    className="col-span-3"
+                                    required
+                                    value={campaignData.description}
+                                    onChange={(e) => {
                                         setCampaignData({
                                             ...campaignData,
-                                            deadline: date ?? new Date(),
+                                            description: e.target.value,
                                         });
                                     }}
                                 />
                             </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="target" className="text-right">
+                                    Target (ETH)
+                                </Label>
+                                <div className="col-span-3 flex items-center">
+                                    <Slider
+                                        id="target"
+                                        name="target"
+                                        min={0}
+                                        max={10}
+                                        step={1}
+                                        className="flex-grow mr-2"
+                                        value={[campaignData.target]}
+                                        onValueChange={(value) => {
+                                            setCampaignData({
+                                                ...campaignData,
+                                                target: value[0],
+                                            });
+                                        }}
+                                    />
+                                    <Badge variant="secondary">
+                                        {campaignData.target} ETH
+                                    </Badge>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label
+                                    htmlFor="deadline"
+                                    className="text-right"
+                                >
+                                    Deadline
+                                </Label>
+                                <div className="col-span-3 border rounded-lg">
+                                    <Calendar
+                                        mode="single"
+                                        selected={campaignData.deadline}
+                                        onSelect={(date) => {
+                                            setCampaignData({
+                                                ...campaignData,
+                                                deadline: date ?? new Date(),
+                                            });
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="image" className="text-right">
+                                    Image URL
+                                </Label>
+                                <Input
+                                    id="image"
+                                    name="image"
+                                    type="url"
+                                    className="col-span-3"
+                                    required
+                                    value={campaignData.image}
+                                    onChange={(e) =>
+                                        setCampaignData({
+                                            ...campaignData,
+                                            image: e.target.value,
+                                        })
+                                    }
+                                />
+                            </div>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="image" className="text-right">
-                                Image URL
-                            </Label>
-                            <Input
-                                id="image"
-                                name="image"
-                                type="url"
-                                className="col-span-3"
-                                required
-                                value={campaignData.image}
-                                onChange={(e) =>
-                                    setCampaignData({
-                                        ...campaignData,
-                                        image: e.target.value,
-                                    })
-                                }
+                        <DialogFooter>
+                            <Button type="submit" disabled={isCreating}>
+                                Create Campaign
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                    <div className="flex-1 flex flex-col items-center justify-center">
+                        {campaignData.image ? (
+                            <img
+                                src={campaignData.image}
+                                alt="Campaign preview"
+                                className="w-full h-full object-cover rounded-md"
                             />
-                        </div>
+                        ) : (
+                            <div className="w-full h-64 bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
+                                No image provided
+                            </div>
+                        )}
                     </div>
-                    <DialogFooter>
-                        <Button type="submit" disabled={isCreating}>
-                            Create Campaign
-                        </Button>
-                    </DialogFooter>
-                </form>
+                </div>
             </DialogContent>
         </Dialog>
     );
 };
-
 export default function Component() {
     const address = useAddress();
     const { toast } = useToast();
     const { contract } = useContract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS);
     const { data: campaigns, isLoading: isCampaignsLoading } = useContractRead(
         contract,
-        "getCampaigns"
+        "getCampaigns",
     );
     const { mutateAsync: createCampaign, isLoading: isCreating } =
         useContractWrite(contract, "createCampaign");
@@ -275,6 +295,19 @@ export default function Component() {
 
     const handleCreateCampaign = async (campaignData: Campaign) => {
         if (!contract || !address) return;
+        if (
+            !campaignData.title ||
+            !campaignData.description ||
+            !campaignData.target ||
+            !campaignData.deadline ||
+            !campaignData.image
+        ) {
+            toast({
+                title: "Error creating campaign",
+                description: "Please fill in all fields.",
+            });
+            return;
+        }
         const timestamp = Math.floor(campaignData.deadline.getTime() / 1000);
         const args = [
             campaignData.title,
@@ -356,7 +389,7 @@ export default function Component() {
                             onClick={() =>
                                 document
                                     .querySelector<HTMLButtonElement>(
-                                        '[aria-haspopup="dialog"]'
+                                        '[aria-haspopup="dialog"]',
                                     )
                                     ?.click()
                             }
